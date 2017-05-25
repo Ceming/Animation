@@ -28,7 +28,7 @@ void add_polygon( struct matrix *polygons,
 		  double x0, double y0, double z0, 
 		  double x1, double y1, double z1, 
 		  double x2, double y2, double z2 ) {
-
+  
   add_point(polygons, x0, y0, z0);
   add_point(polygons, x1, y1, z1);
   add_point(polygons, x2, y2, z2);
@@ -43,6 +43,68 @@ Goes through polygons 3 points at a time, drawing
 lines connecting each points to create bounding
 triangles
 ====================*/
+void scanline(struct matrix *polygons, int point, screen s) {
+  int y0, y1, y2;
+  color g;
+  g.blue = point * 4 % 256;
+  g.green = 0;
+  g.red = 0;
+  struct matrix *top, *mid, *bot;
+  int y0 = polygons->m[1][point];
+  int y1 = polygons->m[1][point + 1];
+  int y2 = polygons->m[1][point + 2];
+  if ((y0 >= y1) && (y0 >= y2)) {
+    if (y1 >= y2) {
+      top = polygons->m[point];
+      mid = polygons->m[point + 1];
+      bot = polygons->m[point + 2];
+    }
+    else {
+      top = polygons->m[point];
+      mid = polygons->m[point + 2];
+      bot = polygons->m[point + 1];
+    }
+  }
+  if ((y1 >= y0) && (y1 >= y2)) {
+    if (y0 >= y2) {
+      top = polygons->m[point + 1];
+      mid = polygons->m[point];
+      bot = polygons->m[point + 2];
+    }
+    else {
+      top = polygons->m[point + 1];
+      mid = polygons->m[point + 2];
+      bot = polygons->m[point];
+    }
+  }
+  if ((y2 >= y0) && (y2 >= y1)) {
+    if (y1 >= y0) {
+      top = polygons->m[point + 2];
+      mid = polygons->m[point + 1];
+      bot = polygons->m[poin];
+    }
+    else {
+      top = polygons->m[point + 2];
+      mid = polygons->m[point];
+      bot = polygons->m[point + 1];
+    }
+  }
+  int deltaY = top->m[0][1] - bot->m[0][1];
+  int countY;
+  int botX, midX, topX;
+  int x0, x1;
+  x0 = (top->m[0][0] - bot->m[0][0]) / (top->m[0][1] - bot->m[0][1]);
+  if (mid->m[0][1] > bot->m[0][1])
+    x1 = (top->m[0][0] - bot->m[0][0]) / (top->m[0][1] - bot->m[0][1]);
+  for (countY = 0; countY < deltaY; countY++){
+    botX = bot->m[0][0];
+    midX = mid->m[0][1];
+    topX = top->m[0][2];
+    
+
+      
+
+
 void draw_polygons( struct matrix *polygons, screen s, color c ) {
   if ( polygons->lastcol < 3 ) {
     printf("Need at least 3 points to draw a polygon!\n");
