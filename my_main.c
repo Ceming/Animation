@@ -85,10 +85,11 @@ void first_pass() {
       strcpy(name,op[i].op.basename.p->name);
       hasName = 1;
     }
-    else if(op[i].opcode==VARY)hasVary=1;
+    else if(op[i].opcode == VARY)
+      hasVary=1;
   }
   if(hasVary == 1 && hasFrames == 0){
-    printf("Exiting program because no frames found but vary found.\n");
+    printf("No frames found.\n");
     exit(0);
   }
   else if(hasFrames == 1 && hasName == 0){
@@ -138,7 +139,7 @@ struct vary_node ** second_pass(){
       start_val = op[i].op.vary.start_val;
       end_val = op[i].op.vary.end_val;
       current_val = start_val;
-      change = (end_val-start_val) / (end_frame-start_frame);
+      change = (end_val - start_val) / (end_frame - start_frame);
       for(j = start_frame; j <= end_frame; j++){
         knob = (struct vary_node*)malloc(sizeof(struct vary_node));
         strcpy(knob->name, op[i].op.vary.p->name);
@@ -228,12 +229,13 @@ void my_main() {
   num_frames = 1;
   struct vary_node ** knobs;
   struct vary_node * knob;
-  knobs = (struct vary_node **)malloc(sizeof(struct vary_node*) * num_frames);
   first_pass();
+  knobs = (struct vary_node **)malloc(sizeof(struct vary_node*) * num_frames);
   if (num_frames > 1)
     knobs = second_pass();
+  
 
-  int val;
+  double val;
   int j, k;
   for(j = 0; j < num_frames; j++){
     if(num_frames > 1){
@@ -315,7 +317,7 @@ void my_main() {
 	case MOVE:
 	  if (op[i].op.move.p != NULL)
 	    {
-	      val = op[i].op.scale.p->s.value;
+	      val = op[i].op.move.p->s.value;
 	    }
 	  tmp = make_translate( op[i].op.move.d[0] * val,
 				op[i].op.move.d[1] * val,
