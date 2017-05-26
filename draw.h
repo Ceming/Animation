@@ -4,6 +4,7 @@
 #include "matrix.h"
 #include "ml6.h"
 
+void scanline(struct matrix *polygons, int point, screen c);
 
 //polygon organization
 void add_polygons( struct matrix * points, 

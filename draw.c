@@ -50,9 +50,9 @@ void scanline(struct matrix *polygons, int point, screen s) {
   g.green = 0;
   g.red = 0;
   struct matrix *top, *mid, *bot;
-  int y0 = polygons->m[1][point];
-  int y1 = polygons->m[1][point + 1];
-  int y2 = polygons->m[1][point + 2];
+  y0 = polygons->m[1][point];
+  y1 = polygons->m[1][point + 1];
+  y2 = polygons->m[1][point + 2];
   if ((y0 >= y1) && (y0 >= y2)) {
     if (y1 >= y2) {
       top = polygons->m[point];
@@ -81,7 +81,7 @@ void scanline(struct matrix *polygons, int point, screen s) {
     if (y1 >= y0) {
       top = polygons->m[point + 2];
       mid = polygons->m[point + 1];
-      bot = polygons->m[poin];
+      bot = polygons->m[point];
     }
     else {
       top = polygons->m[point + 2];
@@ -89,21 +89,27 @@ void scanline(struct matrix *polygons, int point, screen s) {
       bot = polygons->m[point + 1];
     }
   }
-  int deltaY = top->m[0][1] - bot->m[0][1];
+  int deltaY = top->m[1] - bot->m[1];
   int countY;
   int botX, midX, topX;
-  int x0, x1;
-  x0 = (top->m[0][0] - bot->m[0][0]) / (top->m[0][1] - bot->m[0][1]);
-  if (mid->m[0][1] > bot->m[0][1])
-    x1 = (top->m[0][0] - bot->m[0][0]) / (top->m[0][1] - bot->m[0][1]);
+  int botY, midY, topY;
+  int x0, x1, y;
+  botX = bot->m[0];
+  midX = mid->m[0];
+  topX = top->m[0];
+  botY = bot->m[1];
+  midY = mid->m[1];
+  topY = top->m[1];
   for (countY = 0; countY < deltaY; countY++){
-    botX = bot->m[0][0];
-    midX = mid->m[0][1];
-    topX = top->m[0][2];
-    
-
-      
-
+    y = countY + botY;
+    x0 = (topX - botX) / (topY - botY) * countY + botX;
+    if (midY <= y)
+      x1 = (topX - midX) / (topY - midY) * countY + midX;
+    else
+      x1 = (midX - botX) / (midY - botY) * countY + botX;
+    draw_line(x0, y, x1, y, s, g);
+  }
+}
 
 void draw_polygons( struct matrix *polygons, screen s, color c ) {
   if ( polygons->lastcol < 3 ) {
@@ -119,7 +125,9 @@ void draw_polygons( struct matrix *polygons, screen s, color c ) {
     normal = calculate_normal(polygons, point);
 
     if ( normal[2] > 0 ) {
-    
+      
+      scanline(polygons, point, s);
+
       draw_line( polygons->m[0][point],
 		 polygons->m[1][point],
 		 polygons->m[0][point+1],
